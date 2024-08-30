@@ -23,6 +23,7 @@ public class ReferenceDataVerification {
         var isValid = refDataIsValid;
         var message = $"Ref Data id: [{refData.Id}] is" + (isValid ? "" : " not") + " valid.";
         Debug.WriteLine(message);
+        Debug.WriteLine("*********");
         return isValid;
     }
     private static bool VerifyTransactionHeader(TransactionHeader transHdr, int refDataId) {
@@ -63,22 +64,22 @@ public class ReferenceDataVerification {
         return isValid;
     }
     private static bool VerifyCompany(string company) {
-        var companies = new List<string> { "dsi", "pg", "amazon" };
-        var isValid = companies.Contains(company.ToLower());
+        var companies = new List<string> { "DSI", "PG", "Amazon" };
+        var isValid = companies.Any(x => x.ToLower() == company.ToLower());
         var message = $"---Company [{company}] is" + (isValid ? "" : " not") + " valid.";
         Debug.WriteLine(message);
         return isValid;
     }
     private static bool VerifyAccount(string account) {
         var accounts = new List<string> { "0000", "1111", "2222" };
-        var isValid = accounts.Contains(account);
+        var isValid = accounts.Any(x => x.ToLower() == account.ToLower());
         var message = $"---Account [{account}] is" + (isValid ? "" : " not") + " valid.";
         Debug.WriteLine(message);
         return isValid;
     }
     private static bool VerifySource(string source) {
-        var sources = new List<string> { "internal", "external", "gerber" };
-        var isValid = sources.Contains(source.ToLower());
+        var sources = new List<string> { "Internal", "EXTERNAL", "gerber" };
+        var isValid = sources.Any(x => x.ToLower() == source.ToLower());
         var message = $"---Source [{source}] is" + (isValid ? "" : " not") + " valid.";
         Debug.WriteLine(message);
         return isValid;

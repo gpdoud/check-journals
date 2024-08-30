@@ -15,7 +15,7 @@ public class ReferenceDataVerification {
 
     public static bool VerifyReferenceData(ReferenceData referenceData) {
         var refData = referenceData as ReferenceData;
-        Debug.WriteLine($"Reference Data: {refData}");
+        Debug.WriteLine(refData);
         var refDataIsValid = true;
         foreach(var transHdr in refData.TransactionHeaders) {
             refDataIsValid &= VerifyTransactionHeader(transHdr, refData.Id);
@@ -26,12 +26,12 @@ public class ReferenceDataVerification {
         return isValid;
     }
     private static bool VerifyTransactionHeader(TransactionHeader transHdr, int refDataId) {
-        Debug.WriteLine($"-Trans Header: {transHdr}");
+        Debug.WriteLine($"-{transHdr}");
         var transHdrIsValid = true;
         // check validity of each TransactionDetail
         var transDtlIsValid = true;
         foreach(var transDtl in transHdr.TransactionDetails) {
-            Debug.WriteLine($"--Trans Dtl: {transDtl}");
+            Debug.WriteLine($"--{transDtl}");
             var companyIsValid = VerifyCompany(transDtl.Company);
             var accountIsValid = VerifyAccount(transDtl.Account);
             var sourceIsValid = VerifySource(transDtl.Source);

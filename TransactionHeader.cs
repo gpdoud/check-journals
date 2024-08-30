@@ -14,6 +14,6 @@ public class TransactionHeader {
 
 
     public override string ToString() {
-        return $"Id[{Id}] | Desc[{Description}] | Trans Hdr Count[{TransactionDetails.Count()}]";
+        return $"TRNHDR: Id[{Id}] | Desc[{Description}] | Trans Hdr Count[{TransactionDetails.Count()}]";
     }
 }

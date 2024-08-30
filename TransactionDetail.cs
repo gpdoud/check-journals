@@ -17,7 +17,7 @@ public class TransactionDetail {
     public DebitCreditCode DebitCredit { get; set; } = default!;
 
     public override string ToString() {
-        return $"Id[{Id}] | Desc[{Description}] | Comp[{Company}] | Acct[{Account}] | Src[{Source}], Amt[{Amount}], [{DebitCredit.ToString()}]";
+        return $"TRNDTL: Id[{Id}] | Desc[{Description}] | Comp[{Company}] | Acct[{Account}] | Src[{Source}], Amt[{Amount}], [{DebitCredit.ToString()}]";
     }
 }
 

@@ -1,65 +1,70 @@
-﻿
+﻿global using System.Diagnostics;
 using check_journals;
 
-Console.WriteLine("Check Journals");
-/*
- * Instead of create a SQL database, I just decide to build
- * the data in the app. The Init() method creates three Journal
- * instances and each has a few JournalItem instances
- */
-var journalData = Init();
-/*
- * This iterates through each of the Journals with the JournalItems
- * as a property of each Journal.
- */
-foreach(var journal in journalData.Values) {
-    /*
-     * Pass each Journal to the VerifyJournal static method.
-     * It will return True of the Journal passes all the checks
-     * and False if any check fails. 
-     */
-    var rc = JournalVerification.VerifyJournal(journal);
-    Console.WriteLine($"Journal Id {journal.Id} result is {(rc ? "Valid" : "Invalid")}");
-    /*
-     * If any check fails, the messages will be displayed on the console
-     */
+Console.WriteLine("Check Reference Data");
+
+var refDataList = Init();
+
+foreach(var refData in refDataList.Values) {
+
+    var rc = ReferenceDataVerification.VerifyReferenceData(refData);
     if(!rc) {
-        foreach(var msg in JournalVerification.Messages) {
-            Console.WriteLine($"-- {msg}");
+        foreach(var msg in ReferenceDataVerification.Messages) {
+            Debug.WriteLine($"-- {msg}");
         }
     }
 }
     
-SortedList<int, Journal> Init() {
+SortedList<int, ReferenceData> Init() {
 
-    var journals = new SortedList<int, Journal>();
+    var refData = new SortedList<int, ReferenceData>();
 
-    var j1 = new Journal {
-        Id = 1, Description = "J1", Balance = 100, Items = new List<JournalItem> {
-        new JournalItem { Id = 10, Debit = 100, Credit = 0, JournalId = 1 },
-        new JournalItem { Id = 11, Debit = 0, Credit = 75, JournalId = 1 },
-        new JournalItem { Id = 12, Debit = 0, Credit = 25, JournalId = 1 }
-    },
+    var rd1 = new ReferenceData {
+        Id = 1, Description = "RD1", TransactionHeaders = new List<TransactionHeader> {
+            new TransactionHeader {
+                Id = 10, Description = "TH101", ReferenceDataId = 1, TransactionDetails = {
+                    new TransactionDetail {
+                        Id = 11, Description = "TD1011", Amount = 100, Company = "DSI", Account = "0000", Source = "INTERNAL",
+                        DebitCredit = DebitCreditCode.Debit, TransactionHeaderId = 10
+                    },
+                    new TransactionDetail {
+                        Id = 12, Description = "TD1012", Amount = 100, Company = "DSI", Account = "0000", Source = "INTERNAL",
+                        DebitCredit = DebitCreditCode.Credit, TransactionHeaderId = 10
+                    }
+                }
+            },
+            new TransactionHeader {
+                Id = 11, Description = "TH111", ReferenceDataId = 1, TransactionDetails = {
+                    new TransactionDetail {
+                        Id = 21, Description = "TD1101", Amount = 50, Company = "DSI", Account = "1111", Source = "INTERNAL",
+                        DebitCredit = DebitCreditCode.Debit, TransactionHeaderId = 11
+                    },
+                    new TransactionDetail {
+                        Id = 22, Description = "TD1102", Amount = 50, Company = "DSI", Account = "2222", Source = "INTERNAL",
+                        DebitCredit = DebitCreditCode.Credit, TransactionHeaderId = 11
+                    }
+                }
+            }
+        },
     };
-    var j2 = new Journal {
-        Id = 2, Description = "J2", Balance = 500, Items = new List<JournalItem> {
-        new JournalItem { Id = 20, Debit = 0, Credit = 100, JournalId = 2 },
-        new JournalItem { Id = 21, Debit = 40, Credit = 0, JournalId = 2 },
-        new JournalItem { Id = 22, Debit = 30, Credit = 0, JournalId = 2 },
-        new JournalItem { Id = 23, Debit = 20, Credit = 0, JournalId = 2 },
-        new JournalItem { Id = 24, Debit = 10, Credit = 0, JournalId = 2 }
-    },
+    var rd2 = new ReferenceData {
+        Id = 2, Description = "RD2", TransactionHeaders = new List<TransactionHeader> {
+            new TransactionHeader { 
+                Id = 20, Description = "TH2", ReferenceDataId = 2, TransactionDetails = {
+                    new TransactionDetail { 
+                        Id = 31, Description = "TD21", Amount = 100, Company = "DSI", Account = "0000", Source = "INTERNAL",
+                        DebitCredit = DebitCreditCode.Debit, TransactionHeaderId = 20 
+                    },
+                    new TransactionDetail { 
+                        Id = 32, Description = "TD22", Amount = 101, Company = "DSIx", Account = "0001", Source = "Cool Bar",
+                        DebitCredit = DebitCreditCode.Credit, TransactionHeaderId = 20 
+                    }
+                }
+            }
+        },
     };
-    var j3 = new Journal {
-        Id = 3, Description = "J3", Balance = 10, Items = new List<JournalItem> {
-        new JournalItem { Id = 30, Debit = 10, Credit = 0, JournalId = 3 },
-        new JournalItem { Id = 31, Debit = 0, Credit = 7, JournalId = 3 },
-        new JournalItem { Id = 32, Debit = 0, Credit = 2, JournalId = 3 }
-    },
-    };
-    journals.Add(j1.Id, j1);
-    journals.Add(j2.Id, j2);
-    journals.Add(j3.Id, j3);
+    refData.Add(rd1.Id, rd1);
+    refData.Add(rd2.Id, rd2);
 
-    return journals;
+    return refData;
 }

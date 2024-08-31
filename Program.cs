@@ -10,7 +10,7 @@ foreach(var refData in refDataList.Values) {
     var rc = ReferenceDataVerification.VerifyReferenceData(refData);
     if(!rc) {
         foreach(var msg in ReferenceDataVerification.Messages) {
-            WriteLine($"-- {msg}");
+            WriteLine($"MSG: {msg}");
         }
     }
 }

@@ -26,7 +26,7 @@ public class ReferenceDataVerification {
         WriteLine("*********");
         return isValid;
     }
-    private static bool VerifyTransactionHeader(TransactionHeader transHdr, int refDataId) {
+    private static bool VerifyTransactionHeader(TransactionHeader transHdr, string refDataId) {
         WriteLine($"-{transHdr}");
         var transHdrIsValid = true;
         // check validity of each TransactionDetail
@@ -38,23 +38,24 @@ public class ReferenceDataVerification {
             var sourceIsValid = VerifySource(transDtl.Source);
             transDtlIsValid &= companyIsValid && accountIsValid && sourceIsValid;
         }
+        transHdrIsValid &= transDtlIsValid;
         // balancing the debits and credits done only once per TransactionHeader
         var amountIsBalanced = VerifyDebitCreditBalance(transHdr.TransactionDetails, refDataId, transHdr.Id);
-        var isValid = amountIsBalanced && transDtlIsValid;
+        var isValid = amountIsBalanced && transHdrIsValid;
         var message = $"-Trans Hdr id: [{transHdr.Id} | {transHdr.Description}] is" + (isValid ? "" : " not") + " valid.";
         WriteLine(message);
         return isValid;
     }
 
-    private static bool VerifyDebitCreditBalance(List<TransactionDetail> transactionDetails, int refDataId, int transHdrId) {
+    private static bool VerifyDebitCreditBalance(List<TransactionDetail> transactionDetails, string refDataId, string transHdrId) {
         decimal debitCreditBalance = 0;
         foreach(var transDtl in transactionDetails) {
-            switch(transDtl.DebitCredit) {
-                case DebitCreditCode.Debit:
-                    debitCreditBalance += transDtl.Amount;
+            switch(transDtl.DBCR) {
+                case "D":
+                    debitCreditBalance += Convert.ToDecimal(transDtl.Amount);
                     break;
-                case DebitCreditCode.Credit:
-                    debitCreditBalance -= transDtl.Amount;
+                case "C":
+                    debitCreditBalance -= Convert.ToDecimal(transDtl.Amount);
                     break;
             }
         }
@@ -64,22 +65,19 @@ public class ReferenceDataVerification {
         return isValid;
     }
     private static bool VerifyCompany(string company) {
-        var companies = new List<string> { "DSI", "PG", "Amazon" };
-        var isValid = companies.Any(x => x.ToUpper() == company.Trim().ToUpper());
+        var isValid = DataStore.Companies.Any(x => x.ToUpper() == company.Trim().ToUpper());
         var message = $"---Company [{company}] is" + (isValid ? "" : " not") + " valid.";
         WriteLine(message);
         return isValid;
     }
     private static bool VerifyAccount(string account) {
-        var accounts = new List<string> { "0000", "1111", "2222" };
-        var isValid = accounts.Any(x => x.ToLower() == account.ToLower());
+        var isValid = DataStore.Accounts.Any(x => x.ToLower() == account.ToLower());
         var message = $"---Account [{account}] is" + (isValid ? "" : " not") + " valid.";
         WriteLine(message);
         return isValid;
     }
     private static bool VerifySource(string source) {
-        var sources = new List<string> { "Internal", "EXTERNAL", "gerber" };
-        var isValid = sources.Any(x => x.ToLower() == source.ToLower());
+        var isValid = DataStore.Sources.Any(x => x.ToLower() == source.ToLower());
         var message = $"---Source [{source}] is" + (isValid ? "" : " not") + " valid.";
         WriteLine(message);
         return isValid;

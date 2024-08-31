@@ -3,68 +3,61 @@ using check_journals;
 
 Console.WriteLine("Check Reference Data");
 
-var refDataList = Init();
+List<DataStore> RawReferenceDataList = new List<DataStore> {
+    /*
+        * RefData 1, TransHdr 1, TransDtl 1 
+        */
+    new DataStore {
+        ReferenceDataId = "RD1", TransactionHeaderId = "TH1", TransactionDetailId = "TD1",
+        Company = "DSI", Account = "1234", Source = "Gerber", Amount = "100", DBCR = "D", Basis = "Cash"
+    },
+    /*
+        * RefData 1, TransHdr 1, TransDtl 2 
+        */
+    new DataStore {
+        ReferenceDataId = "RD1", TransactionHeaderId = "TH1", TransactionDetailId = "TD2",
+        Company = "DSI", Account = "1234", Source = "Gerber", Amount = "75", DBCR = "C", Basis = "Cash"
+    },
+    /*
+        * RefData 1, TransHdr 1, TransDtl 3 
+        */
+    new DataStore {
+        ReferenceDataId = "RD1", TransactionHeaderId = "TH1", TransactionDetailId = "TD3",
+        Company = "DSI", Account = "1234", Source = "Gerber", Amount = "25", DBCR = "C", Basis = "Cash"
+    },
+    /*
+        * RefData 1, TransHdr 2, TransDtl 4
+        */
+    new DataStore {
+        ReferenceDataId = "RD1", TransactionHeaderId = "TH2", TransactionDetailId = "TD4",
+        Company = "PG", Account = "4321", Source = "PG", Amount = "250", DBCR = "D", Basis = "Common"
+    },
+    /*
+        * RefData 1, TransHdr 2, TransDtl 5
+        */
+    new DataStore {
+        ReferenceDataId = "RD1", TransactionHeaderId = "TH2", TransactionDetailId = "TD5",
+        Company = "PG", Account = "4321", Source = "PG", Amount = "250", DBCR = "C", Basis = "Common"
+    }
+};
 
-foreach(var refData in refDataList.Values) {
+DataStore.ExecuteDataImport(RawReferenceDataList);
 
+var refDataList = DataStore.ReferenceDataList.ToList();
+foreach(var refData in refDataList) {
+    refData.TransactionHeaders = DataStore.TransactionHeaderList
+        .Where(x => x.ReferenceDataId == refData.Id).ToList();
+    foreach(var transHdr in refData.TransactionHeaders) {
+        transHdr.TransactionDetails = DataStore.TransactionDetailList
+            .Where(x => x.TransactionHeaderId == transHdr.Id).ToList();
+    }
+}
+
+foreach(var refData in refDataList) {
     var rc = ReferenceDataVerification.VerifyReferenceData(refData);
     if(!rc) {
         foreach(var msg in ReferenceDataVerification.Messages) {
             WriteLine($"MSG: {msg}");
         }
     }
-}
-    
-SortedList<int, ReferenceData> Init() {
-
-    var refData = new SortedList<int, ReferenceData>();
-
-    var rd1 = new ReferenceData {
-        Id = 1, Description = "RD1", TransactionHeaders = new List<TransactionHeader> {
-            new TransactionHeader {
-                Id = 10, Description = "TH101", ReferenceDataId = 1, TransactionDetails = {
-                    new TransactionDetail {
-                        Id = 11, Description = "TD1011", Amount = 100, Company = "DSI", Account = "0000", Source = "INTERNAL",
-                        DebitCredit = DebitCreditCode.Debit, TransactionHeaderId = 10
-                    },
-                    new TransactionDetail {
-                        Id = 12, Description = "TD1012", Amount = 100, Company = "DSI", Account = "0000", Source = "INTERNAL",
-                        DebitCredit = DebitCreditCode.Credit, TransactionHeaderId = 10
-                    }
-                }
-            },
-            new TransactionHeader {
-                Id = 11, Description = "TH111", ReferenceDataId = 1, TransactionDetails = {
-                    new TransactionDetail {
-                        Id = 21, Description = "TD1101", Amount = 50, Company = "DSI", Account = "1111", Source = "INTERNAL",
-                        DebitCredit = DebitCreditCode.Debit, TransactionHeaderId = 11
-                    },
-                    new TransactionDetail {
-                        Id = 22, Description = "TD1102", Amount = 50, Company = "DSI", Account = "2222", Source = "INTERNAL",
-                        DebitCredit = DebitCreditCode.Credit, TransactionHeaderId = 11
-                    }
-                }
-            }
-        },
-    };
-    var rd2 = new ReferenceData {
-        Id = 2, Description = "RD2", TransactionHeaders = new List<TransactionHeader> {
-            new TransactionHeader { 
-                Id = 20, Description = "TH2", ReferenceDataId = 2, TransactionDetails = {
-                    new TransactionDetail { 
-                        Id = 31, Description = "TD21", Amount = 100, Company = "DSI", Account = "0000", Source = "INTERNAL",
-                        DebitCredit = DebitCreditCode.Debit, TransactionHeaderId = 20 
-                    },
-                    new TransactionDetail { 
-                        Id = 32, Description = "TD22", Amount = 101, Company = "DSIx", Account = "0001", Source = "Cool Bar",
-                        DebitCredit = DebitCreditCode.Credit, TransactionHeaderId = 20 
-                    }
-                }
-            }
-        },
-    };
-    refData.Add(rd1.Id, rd1);
-    refData.Add(rd2.Id, rd2);
-
-    return refData;
 }

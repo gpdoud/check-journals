@@ -1,4 +1,4 @@
-﻿global using System.Diagnostics;
+﻿using static System.Console;
 using check_journals;
 
 Console.WriteLine("Check Reference Data");
@@ -10,7 +10,7 @@ foreach(var refData in refDataList.Values) {
     var rc = ReferenceDataVerification.VerifyReferenceData(refData);
     if(!rc) {
         foreach(var msg in ReferenceDataVerification.Messages) {
-            Debug.WriteLine($"-- {msg}");
+            WriteLine($"-- {msg}");
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-using static System.Diagnostics.Debug;
+using static System.Console;
 
 namespace check_journals;
 
@@ -15,24 +15,24 @@ public class ReferenceDataVerification {
 
     public static bool VerifyReferenceData(ReferenceData referenceData) {
         var refData = referenceData as ReferenceData;
-        Debug.WriteLine(refData);
+        WriteLine(refData);
         var refDataIsValid = true;
         foreach(var transHdr in refData.TransactionHeaders) {
             refDataIsValid &= VerifyTransactionHeader(transHdr, refData.Id);
         }
         var isValid = refDataIsValid;
         var message = $"Ref Data id: [{refData.Id}] is" + (isValid ? "" : " not") + " valid.";
-        Debug.WriteLine(message);
-        Debug.WriteLine("*********");
+        WriteLine(message);
+        WriteLine("*********");
         return isValid;
     }
     private static bool VerifyTransactionHeader(TransactionHeader transHdr, int refDataId) {
-        Debug.WriteLine($"-{transHdr}");
+        WriteLine($"-{transHdr}");
         var transHdrIsValid = true;
         // check validity of each TransactionDetail
         var transDtlIsValid = true;
         foreach(var transDtl in transHdr.TransactionDetails) {
-            Debug.WriteLine($"--{transDtl}");
+            WriteLine($"--{transDtl}");
             var companyIsValid = VerifyCompany(transDtl.Company);
             var accountIsValid = VerifyAccount(transDtl.Account);
             var sourceIsValid = VerifySource(transDtl.Source);
@@ -40,9 +40,9 @@ public class ReferenceDataVerification {
         }
         // balancing the debits and credits done only once per TransactionHeader
         var amountIsBalanced = VerifyDebitCreditBalance(transHdr.TransactionDetails, refDataId, transHdr.Id);
-        var isValid = amountIsBalanced && transHdrIsValid;
+        var isValid = amountIsBalanced && transDtlIsValid;
         var message = $"-Trans Hdr id: [{transHdr.Id} | {transHdr.Description}] is" + (isValid ? "" : " not") + " valid.";
-        Debug.WriteLine(message);
+        WriteLine(message);
         return isValid;
     }
 
@@ -60,28 +60,28 @@ public class ReferenceDataVerification {
         }
         var isValid = debitCreditBalance == 0 ? true : false; 
         var message = $"--Trans Dtl DB/CR amounts" + (isValid ? "" : " do not") + " balance.";
-        Debug.WriteLine(message);
+        WriteLine(message);
         return isValid;
     }
     private static bool VerifyCompany(string company) {
         var companies = new List<string> { "DSI", "PG", "Amazon" };
-        var isValid = companies.Any(x => x.ToLower() == company.ToLower());
+        var isValid = companies.Any(x => x.ToUpper() == company.Trim().ToUpper());
         var message = $"---Company [{company}] is" + (isValid ? "" : " not") + " valid.";
-        Debug.WriteLine(message);
+        WriteLine(message);
         return isValid;
     }
     private static bool VerifyAccount(string account) {
         var accounts = new List<string> { "0000", "1111", "2222" };
         var isValid = accounts.Any(x => x.ToLower() == account.ToLower());
         var message = $"---Account [{account}] is" + (isValid ? "" : " not") + " valid.";
-        Debug.WriteLine(message);
+        WriteLine(message);
         return isValid;
     }
     private static bool VerifySource(string source) {
         var sources = new List<string> { "Internal", "EXTERNAL", "gerber" };
         var isValid = sources.Any(x => x.ToLower() == source.ToLower());
         var message = $"---Source [{source}] is" + (isValid ? "" : " not") + " valid.";
-        Debug.WriteLine(message);
+        WriteLine(message);
         return isValid;
     }
 }

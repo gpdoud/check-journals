@@ -13,11 +13,12 @@ public class TransactionDetail {
     public string Company { get; set; } = default!;
     public string Account { get; set; } = default!;
     public string Source { get; set; } = default!;
+    public string Basis { get; set; } = default!;
     public string Amount { get; set; } = default!;
     public string DBCR { get; set; } = default!;
 
     public override string ToString() {
-        return $"TRNDTL: Id[{Id}] | Desc[{Description}] | Comp[{Company}] | Acct[{Account}] | Src[{Source}], Amt[{Amount}], [{DBCR}]";
+        return $"TRNDTL: Id[{Id}] | Desc[{Description}] | Comp[{Company}] | Acct[{Account}] | Basis[{Basis}] | Src[{Source}], Amt[{Amount}], [{DBCR}]";
     }
 }
 

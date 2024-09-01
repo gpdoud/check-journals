@@ -26,7 +26,7 @@ public class DataStore {
     public static List<TransactionDetail> TransactionDetailList { get; set; } = new List<TransactionDetail>();
 
     public static List<string> Companies { get; set; } = new List<string> {
-        "DSI", "PG", "Amazon" 
+        "DSI", "PG", "Amazon"
     };
     public static List<string> Accounts { get; set; } = new List<string> {
         "0000", "1111", "1234", "2222", "4321"
@@ -52,7 +52,7 @@ public class DataStore {
         ReferenceDataList.Clear();
         TransactionHeaderList.Clear();
         TransactionDetailList.Clear();
-        
+
         /****************************************************************************
          * Because each line of the imported data include a ReferenceData key, 
          * a TransactionHeader key, and a Transaction Detail key, this loop will 
@@ -78,13 +78,25 @@ public class DataStore {
             if(!TransactionDetailList.Any(x => x.Id == item.TransactionDetailId)) {
                 transDtlId = item.TransactionHeaderId;
                 TransactionDetail transDtl = new() {
-                    Id = item.TransactionDetailId, Description = "Trans Dtl", 
-                    Account = item.Account, Company = item.Company, Source = item.Source, Amount = item.Amount, DBCR = item.DBCR,
-                    TransactionHeaderId = transHdrId
+                    Id = item.TransactionDetailId, Description = "Trans Dtl",
+                    Account = item.Account, Company = item.Company, Source = item.Source, Basis = item.Basis, 
+                    Amount = item.Amount, DBCR = item.DBCR, TransactionHeaderId = transHdrId
                 };
                 TransactionDetailList.Add(transDtl);
             }
         }
     }
 
+    public static List<ReferenceData> ReturnDataWithAllRelationships() {
+        var refDataList = ReferenceDataList.ToList();
+        foreach(var refData in refDataList) {
+            refData.TransactionHeaders = TransactionHeaderList
+                .Where(x => x.ReferenceDataId == refData.Id).ToList();
+            foreach(var transHdr in refData.TransactionHeaders) {
+                transHdr.TransactionDetails = TransactionDetailList
+                    .Where(x => x.TransactionHeaderId == transHdr.Id).ToList();
+            }
+        }
+        return refDataList;
+    }
 }

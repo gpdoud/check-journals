@@ -8,11 +8,53 @@ using System.Threading.Tasks;
 using static System.Console;
 
 namespace check_journals;
-
+/// <summary>
+/// This class does all the verification that the imported data is valid
+/// or displays when some data is not valid
+/// </summary>
 public class ReferenceDataVerification {
-
+    /// <summary>
+    /// Messages can be loaded from validation and are displayed after
+    /// all the verification is complete
+    /// </summary>
     public static List<string> Messages = new List<string>();
-
+    /// <summary>
+    /// This is the start of the verification. It starts with a single ReferenceData
+    /// item that contain 1 or more TransactionHeaders and each of those with 2 or more 
+    /// TransactionDetail items.
+    /// 
+    /// There is no data in the ReferenceData not the TransactionHeader items that 
+    /// needs to be verified. All the verification is for the TransactionDetail items.
+    /// </summary>
+    /// <param name="referenceData">
+    /// This data is a collection of the ReferenceData which includes all the 
+    /// TransactionHeaders attached to the ReferenceData. The TransactionDetail items
+    /// are attached to the TransactionHeader. It looks like this:
+    /// 
+    /// ReferenceData (processed one at a time)
+    ///     TransactionHeader
+    ///         TransactionDetail
+    ///         TransactionDetail
+    ///     TransactionHeader
+    ///         TransactionDetail
+    ///         TransactionDetail
+    ///         TransactionDetail
+    ///     TransactionHeader
+    ///         TransactionDetail
+    ///         TransactionDetail
+    ///         TransactionDetail
+    ///         TransactionDetail
+    /// 
+    /// The TransactionDetail contains: Company, Account, Source, Basic, Amount, Debit or Credit
+    /// 
+    /// The Company, Account, Source, Basic are all validated by checking the values
+    /// against a database table.
+    /// 
+    /// The group of TransactionDetails within a TransactionHeader each have an Amount and
+    /// an indicator of either Debit or Credit. The sum of the Debit amounts must match the
+    /// sum of the Credit amounts.
+    /// </param>
+    /// <returns></returns>
     public static bool VerifyReferenceData(ReferenceData referenceData) {
         var refData = referenceData as ReferenceData;
         WriteLine(refData);

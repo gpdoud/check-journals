@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="bin\Debug\net8.0\ReferenceDataImport.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="microsoft.data.sqlite" Version="8.0.8" />
   </ItemGroup>
 

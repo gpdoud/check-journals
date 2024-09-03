@@ -2,6 +2,8 @@
 using check_journals;
 
 WriteLine("Check Reference Data");
+const string ImportDataFilePath = "ReferenceDataImport.txt";
+var ReferenceDataList = TextInputReferenceData.ImportDataList(ImportDataFilePath);
 
 List<DataStore> RawReferenceDataList = new List<DataStore> {
 
